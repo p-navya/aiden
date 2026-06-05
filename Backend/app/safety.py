@@ -246,9 +246,54 @@ def _block_message(threats: list[Threat]) -> str:
     return f"{_BLOCK_USER_MESSAGE} Detected risk: {primary.category}. {primary.explanation}"
 
 
+def _generate_model_response(prompt: str) -> str:
+    import os
+    import json
+    import urllib.request
+
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    model = os.getenv("OPENROUTER_MODEL", "openrouter/free")
+    
+    if not api_key:
+        return "Error: OPENROUTER_API_KEY is not set in the environment."
+        
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+        "HTTP-Referer": "http://127.0.0.1:8000",
+        "X-Title": "Aiden Guardrail System"
+    }
+    
+    body = {
+        "model": model,
+        "messages": [
+            {"role": "user", "content": prompt}
+        ]
+    }
+    
+    req = urllib.request.Request(
+        url, 
+        data=json.dumps(body).encode("utf-8"), 
+        headers=headers,
+        method="POST"
+    )
+    
+    try:
+        with urllib.request.urlopen(req) as res:
+            res_body = json.loads(res.read().decode("utf-8"))
+            return res_body["choices"][0]["message"]["content"]
+    except Exception as e:
+        return f"Error calling OpenRouter: {str(e)}"
+
+
 def evaluate_guardrails(req: EvaluateRequest) -> EvaluateResponse:
+    import os
     prompt = req.prompt or ""
     model_response = req.model_response
+
+    if not model_response and os.getenv("OPENROUTER_API_KEY"):
+        model_response = _generate_model_response(prompt)
 
     threats: list[Threat] = []
     redacted_response: Optional[str] = None
