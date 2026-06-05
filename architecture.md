@@ -22,7 +22,7 @@ Below is the conceptual architecture of the guardrail service showing how reques
 
 ```mermaid
 flowchart TD
-    User([User Client]) -->|1. POST /evaluate| API[FastAPI API Endpoint]
+    User(["User Client"]) -->|1. POST /evaluate| API[FastAPI API Endpoint]
     
     subgraph Guardrail Engine
         API -->|2. Check Inputs| Detectors{Safety Detectors}

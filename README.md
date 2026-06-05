@@ -12,10 +12,10 @@ This is a working **prototype** of an “AI safety guardrail” service that:
 
 ```mermaid
 flowchart LR
-  U[User] --> UI[React UI (Tailwind)]
-  UI -->|POST /evaluate| API[FastAPI Guardrail API]
-  API --> DET[Detectors (regex/heuristics)]
-  DET --> POLICY[Scoring + policy (block/redact/allow)]
+  U[User] --> UI["React UI (Tailwind)"]
+  UI -->|POST /evaluate| API["FastAPI Guardrail API"]
+  API --> DET["Detectors (regex/heuristics)"]
+  DET --> POLICY["Scoring + policy (block/redact/allow)"]
   POLICY --> API
   API --> UI
 ```
