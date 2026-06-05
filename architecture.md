@@ -113,3 +113,13 @@ When multiple safety events trigger on a request, the **Verdict Policy** evaluat
    - *Severity*: None.
    - *Verdict*: `allow`
    - *Action*: Original output is displayed unmodified.
+
+---
+
+## 6. OpenRouter LLM Response Generation
+
+To enable active end-to-end testing, the backend is integrated with **OpenRouter**:
+- **Triggers**: If the `model_response` field is omitted (or sent as empty `""`), and `OPENROUTER_API_KEY` is present in the backend `.env` variables, the backend automatically calls the OpenRouter API.
+- **Model Routing**: Uses `"openrouter/free"` to route queries to free-tier LLMs (e.g. Llama 3, Gemma 2, etc.) at zero cost.
+- **Verification Flow**: The generated response is returned back to the guardrail detectors as if it were candidate model output. The guardrail engines run, evaluate, redact, or block the output dynamically before the response payload is sent back to the frontend dashboard.
+
